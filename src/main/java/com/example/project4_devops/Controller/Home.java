@@ -5,8 +5,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class Home {
+
     @GetMapping("/hello")
-    public String getIndex(){
+    public String getIndex() {
         return "Hello Kubernetes";
     }
 }

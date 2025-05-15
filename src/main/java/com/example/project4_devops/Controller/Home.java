@@ -8,7 +8,7 @@ public class Home {
 
     @GetMapping("/")
     public String home() {
-        return "Hello webhook Kubernetes";
+        return "Hello webhook fsdfKubernetes";
     }
     @GetMapping("/index")
     public String getIndex() {

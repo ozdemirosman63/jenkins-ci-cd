@@ -12,7 +12,7 @@ public class Home {
     }
     @GetMapping("/index")
     public String getIndex() {
-        return "Osman fsdfas";
+        return "Osman Baba";
     }
 
 }

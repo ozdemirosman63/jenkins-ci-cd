@@ -7,6 +7,7 @@ pipeline {
     }
 
     stages {
+
         stage('Get Git Commit SHA') {
             steps {
                 script {
@@ -44,7 +45,7 @@ pipeline {
 
         stage('Generate deployment.yaml') {
             steps {
-                sh 'sed "s|IMAGE_TAG|${IMAGE_TAG}|" k8s/deployment-template.yaml > deployment.yaml'
+                sh "sed 's|IMAGE_TAG|${env.IMAGE_TAG}|' k8s/deployment-template.yaml > deployment.yaml"
             }
         }
 

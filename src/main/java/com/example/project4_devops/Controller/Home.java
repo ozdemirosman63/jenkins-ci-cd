@@ -8,12 +8,12 @@ public class Home {
 
     @GetMapping("/")
     public String home() {
-        return "Suç ve ceza";  // veya doğru olan versiyon
+        return "Son ";  // veya doğru olan versiyon
 
     }
     @GetMapping("/index")
     public String getIndex() {
-        return "index";
+        return "Hello World";
     }
 
 }

@@ -2,46 +2,46 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "ozdemirosman/project4-devops"
+        IMAGE_NAME = "ozdemirosman/project4-devops"
     }
 
     stages {
-        stage('Clone from GitHub') {
+        stage('Clone') {
             steps {
-                git branch: 'main', url: 'https://github.com/ozdemirosman63/project4-devops.git'
+                git branch: 'main', url: 'https://github.com/ozdemirosman63/jenkins-ci-cd.git'
             }
         }
 
-        stage('Build with Maven') {
+        stage('Build') {
             steps {
-                sh 'mvn clean package -DskipTests'
+                sh './mvnw clean package -DskipTests'
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Docker Build') {
             steps {
-                sh 'docker build -t $DOCKER_IMAGE .'
+                sh "docker build -t ${IMAGE_NAME} ."
             }
         }
 
-        stage('DockerHub Login') {
+        stage('Docker Login') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                    sh 'echo $PASSWORD | docker login -u $USERNAME --password-stdin'
+                withCredentials([usernamePassword(credentialsId: 'github-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
                 }
             }
         }
 
-        stage('Push to DockerHub') {
+        stage('Docker Push') {
             steps {
-                sh 'docker push $DOCKER_IMAGE'
+                sh "docker push ${IMAGE_NAME}"
             }
         }
 
-        stage('Deploy to K8s') {
+        stage('K8s Deploy') {
             steps {
-                sh 'kubectl apply -f deployment.yaml'
-                sh 'kubectl apply -f service.yaml'
+                sh "kubectl apply -f deployment.yaml"
+                sh "kubectl apply -f service.yaml"
             }
         }
     }

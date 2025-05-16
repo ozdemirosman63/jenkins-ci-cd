@@ -2,18 +2,13 @@ pipeline {
     agent any
 
     environment {
-        REGISTRY = "ozdemirosman"
-        REPO = "project4-devops"
+        DOCKER_IMAGE = "ozdemirosman/project4-devops"
     }
 
     stages {
-
-        stage('Get Git Commit SHA') {
+        stage('Clone from GitHub') {
             steps {
-                script {
-                    env.IMAGE_TAG = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
-                    env.DOCKER_IMAGE = "${env.REGISTRY}/${env.REPO}:${env.IMAGE_TAG}"
-                }
+                git branch: 'main', url: 'https://github.com/ozdemirosman63/project4-devops.git'
             }
         }
 
@@ -25,7 +20,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh "docker build -t ${env.DOCKER_IMAGE} ."
+                sh 'docker build -t $DOCKER_IMAGE .'
             }
         }
 
@@ -39,13 +34,7 @@ pipeline {
 
         stage('Push to DockerHub') {
             steps {
-                sh "docker push ${env.DOCKER_IMAGE}"
-            }
-        }
-
-        stage('Generate deployment.yaml') {
-            steps {
-                sh "sed 's|IMAGE_TAG|${env.IMAGE_TAG}|' k8s/deployment-template.yaml > deployment.yaml"
+                sh 'docker push $DOCKER_IMAGE'
             }
         }
 

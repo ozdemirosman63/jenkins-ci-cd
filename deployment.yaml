@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: project4-deployment
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: project4
@@ -14,7 +14,6 @@ spec:
     spec:
       containers:
         - name: project4-container
-          image: project4-devops
-          imagePullPolicy: Always
+          image: ozdemirosman/project4-devops
           ports:
             - containerPort: 8080

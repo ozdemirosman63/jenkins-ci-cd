@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: project4-deployment
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: project4
@@ -13,8 +13,8 @@ spec:
         app: project4
     spec:
       containers:
-        - name: project4
-          image: ozdemirosman/project4-devops:IMAGE_TAG
+        - name: project4-container
+          image: project4-devops
           imagePullPolicy: Always
           ports:
             - containerPort: 8080

@@ -9,6 +9,7 @@ public class Home {
     @GetMapping("/")
     public String home() {
         return "Son değişiklik";
+
     }
     @GetMapping("/index")
     public String getIndex() {

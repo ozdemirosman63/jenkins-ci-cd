@@ -18,28 +18,23 @@ pipeline {
             steps {
                 script {
                     env.IMAGE_TAG = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
-                    env.DOCKER_IMAGE = "${REGISTRY}/${REPO}:${IMAGE_TAG}"
+                    env.DOCKER_IMAGE = "${IMAGE_NAME}:${IMAGE_TAG}"
                 }
             }
         }
 
-        stage('Build') {
+        stage('Build JAR') {
             steps {
                 sh 'mvn clean package -DskipTests'
             }
         }
 
-        stage('Docker Build') {
-            steps {
-                sh "docker build -t ${IMAGE_NAME} ."
-                sh "docker build -t ${DOCKER_IMAGE} ."
-            }
-        }
-
-        stage('Docker Login & Push') {
+        stage('Docker Build & Push') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
                     sh 'echo $PASS | docker login -u $USER --password-stdin'
+                    sh "docker build -t ${IMAGE_NAME} ."
+                    sh "docker build -t ${DOCKER_IMAGE} ."
                     sh "docker push ${IMAGE_NAME}"
                     sh "docker push ${DOCKER_IMAGE}"
                 }
@@ -54,7 +49,7 @@ pipeline {
 
         stage('K8s Deploy') {
             steps {
-                sh 'kubectl apply -f k8s/deployment-template.yaml'
+                sh 'kubectl apply -f deployment.yaml'
                 sh 'kubectl apply -f k8s/service.yaml'
             }
         }

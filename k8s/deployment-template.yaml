@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: project4-container
-          image: ozdemirosman/project4-devops:IMAGE_TAG
+          image: ozdemirosman/project4-devops:latest
           ports:
             - containerPort: 8080
           imagePullPolicy: Always

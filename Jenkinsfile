@@ -2,55 +2,44 @@ pipeline {
     agent any
 
     environment {
-        REGISTRY = "ozdemirosman"
-        REPO = "project4-devops"
-        IMAGE_NAME = "${REGISTRY}/${REPO}"
+        IMAGE_NAME = "ozdemirosman/project4-devops"
+        IMAGE_TAG = "latest"
     }
 
     stages {
-        stage('Checkout') {
+        stage('Clone Repo') {
             steps {
-                git branch: 'main', url: 'https://github.com/ozdemirosman63/jenkins-ci-cd.git'
+                git 'https://github.com/kullanici-adi/proje-repo.git'
             }
         }
 
-        stage('Get Git Commit SHA') {
-            steps {
-                script {
-                    env.IMAGE_TAG = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
-                    env.DOCKER_IMAGE = "${IMAGE_NAME}:${IMAGE_TAG}"
-                }
-            }
-        }
-
-        stage('Build JAR') {
+        stage('Build Jar') {
             steps {
                 sh 'mvn clean package -DskipTests'
             }
         }
 
-        stage('Docker Build & Push') {
+        stage('Build Docker Image') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
-                    sh 'echo $PASS | docker login -u $USER --password-stdin'
-                    sh "docker build -t ${IMAGE_NAME} ."
-                    sh "docker build -t ${DOCKER_IMAGE} ."
-                    sh "docker push ${IMAGE_NAME}"
-                    sh "docker push ${DOCKER_IMAGE}"
+                sh "docker build -t $IMAGE_NAME:$IMAGE_TAG ."
+            }
+        }
+
+        stage('Push to DockerHub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh """
+                        echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                        docker push $IMAGE_NAME:$IMAGE_TAG
+                    """
                 }
             }
         }
 
-        stage('Generate Deployment YAML') {
-            steps {
-                sh 'sed "s|IMAGE_TAG|${IMAGE_TAG}|" k8s/deployment-template.yaml > deployment.yaml'
-            }
-        }
-
-        stage('K8s Deploy') {
+        stage('Kubernetes Deploy') {
             steps {
                 sh 'kubectl apply -f deployment.yaml'
-                sh 'kubectl apply -f k8s/service.yaml'
+                sh 'kubectl apply -f service.yaml'
             }
         }
     }

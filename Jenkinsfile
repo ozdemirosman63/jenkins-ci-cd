@@ -9,8 +9,7 @@ pipeline {
     stages {
         stage('Clone Repo') {
             steps {
-                // 🔧 Kendi repo adresini yazdık
-                git url: 'https://github.com/ozdemirosman63/jenkins-ci-cd.git', credentialsId: 'github-creds'
+                git branch: 'main', url: 'https://github.com/ozdemirosman63/jenkins-ci-cd.git', credentialsId: 'github-creds'
             }
         }
 

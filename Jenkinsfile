@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         IMAGE_NAME = "ozdemirosman/project4-devops"
-        IMAGE_TAG = "latest"
+        IMAGE_TAG = "${BUILD_NUMBER}" // 🔁 Her build'de farklı tag
     }
 
     stages {
@@ -38,7 +38,8 @@ pipeline {
 
         stage('Kubernetes Deploy') {
             steps {
-                sh 'kubectl apply -f deployment.yaml'
+                // ❗ Deployment'ı güncelleyip yeni image'ı set ediyoruz
+                sh "kubectl set image deployment/project4-deployment project4-container=$IMAGE_NAME:$IMAGE_TAG"
                 sh 'kubectl apply -f service.yaml'
             }
         }

@@ -4,7 +4,7 @@ pipeline {
     environment {
         REGISTRY = "ozdemirosman"
         REPO = "project4-devops"
-        IMAGE_NAME = "${REGISTRY}/${REPO}:latest"
+        IMAGE_NAME = "${REGISTRY}/${REPO}"
     }
 
     stages {
@@ -24,16 +24,16 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
                     sh 'echo $PASS | docker login -u $USER --password-stdin'
-                    sh 'docker build -t $IMAGE_NAME .'
-                    sh 'docker push $IMAGE_NAME'
+                    sh "docker build -t ${IMAGE_NAME}:latest ."
+                    sh "docker push ${IMAGE_NAME}:latest"
                 }
             }
         }
 
-        stage('Kubernetes Deploy') {
+        stage('Deploy to Kubernetes') {
             steps {
-                sh 'kubectl apply -f k8s/deployment.yaml'
                 sh 'kubectl apply -f k8s/service.yaml'
+                sh 'kubectl apply -f k8s/deployment.yaml'
             }
         }
     }

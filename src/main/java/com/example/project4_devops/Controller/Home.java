@@ -13,7 +13,7 @@ public class Home {
     }
     @GetMapping("/index")
     public String getIndex() {
-        return "Jenkinddddds ci-cd pipeline project";
+        return "ff ci-cd pipeline project";
     }
 
 }

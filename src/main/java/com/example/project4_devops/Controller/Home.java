@@ -8,7 +8,7 @@ public class Home {
 
     @GetMapping("/")
     public String home() {
-        return "Hello World dd";  // veya doğru olan versiyon
+        return "Hello pipeline";  // veya doğru olan versiyon
 
     }
     @GetMapping("/index")

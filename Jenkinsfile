@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         IMAGE_NAME = "ozdemirosman/project4-devops"
-        IMAGE_TAG = "${BUILD_NUMBER}" // Her build'de benzersiz tag
+        IMAGE_TAG = "${BUILD_NUMBER}" //  Her build'de farklı tag
     }
 
     stages {
@@ -21,10 +21,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh """
-                    docker build -t $IMAGE_NAME:$IMAGE_TAG .
-                    docker tag $IMAGE_NAME:$IMAGE_TAG $IMAGE_NAME:latest
-                """
+                sh "docker build -t $IMAGE_NAME:$IMAGE_TAG ."
             }
         }
 
@@ -32,9 +29,8 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh """
-                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
                         docker push $IMAGE_NAME:$IMAGE_TAG
-                        docker push $IMAGE_NAME:latest
                     """
                 }
             }
@@ -42,6 +38,7 @@ pipeline {
 
         stage('Kubernetes Deploy') {
             steps {
+                // Deployment'ı güncelleyip yeni image'ı set ediyoruz
                 sh "kubectl set image deployment/project4-deployment project4-container=$IMAGE_NAME:$IMAGE_TAG"
                 sh 'kubectl apply -f service.yaml'
             }

@@ -8,7 +8,7 @@ public class Home {
 
     @GetMapping("/")
     public String home() {
-        return "Sau Library";
+        return "Sau Libraryy";
 
     }
     @GetMapping("/index")
